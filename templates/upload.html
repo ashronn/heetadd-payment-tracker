@@ -39,6 +39,22 @@
         .debt-alert-danger { background-color: #FFEBEE; border: 1px solid #FF6666; color: #DC3545; padding: 15px; border-radius: 6px; margin-bottom: 25px; font-weight: 600; }
         .debt-alert-success { background-color: #D4EDDA; border: 1px solid #64C783; color: #155724; padding: 15px; border-radius: 6px; margin-bottom: 25px; font-weight: 600; }
         .input-highlight { background-color: #FFFDE7; border-color: #FFC107; } /* เน้นช่องใส่เงิน */
+
+        /* Responsive Adjustments */
+        @media (max-width: 600px) {
+            .container {
+                width: 95%; /* เพิ่มความกว้างให้เต็มจอมากขึ้น */
+                margin: 20px auto;
+                padding: 20px;
+            }
+            h2 {
+                font-size: 1.5em;
+            }
+            /* ทำให้ปุ่มกลับสู่หน้าหลัก (Secondary) อยู่ด้านล่างอย่างชัดเจน */
+            .btn-secondary {
+                margin-top: 20px; 
+            }
+        }
     </style>
 </head>
 <body>
