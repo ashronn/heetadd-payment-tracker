@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>หน้าหลัก (สถานะการจ่าย)</title>
+    <style>
+        /* BASE & LAYOUT */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #F8F8FC; /* เทาอ่อนสะอาดตา */
+            color: #343A40; 
+        }
+        .main-wrapper {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* TOP NAVBAR (Action Bar) */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #EAEAEA;
+            margin-bottom: 30px;
+        }
+        .nav-actions { display: flex; align-items: center; gap: 15px; }
+        .nav-actions button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 0.9em;
+        }
+        .btn-main { background-color: #6C63FF; color: white; } /* ม่วง */
+        .btn-logout { background-color: #DC3545; color: white; border: none; } /* FIX: เน้น Logout ด้วยสีแดง */
+        .btn-logout:hover { background-color: #C32840; } /* FIX: Hover Color */
+
+
+        /* DASHBOARD CONTENT GRID */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr; /* Two main columns */
+            gap: 30px;
+        }
+
+        /* CARD STYLING */
+        .widget-card {
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+        }
+        .widget-header {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #495057;
+        }
+
+        /* SUMMARY / GREETING SECTION */
+        .greeting-card {
+            background: linear-gradient(135deg, #A29BFE 0%, #EAEAEA 100%); /* ม่วงอ่อน Gradient */
+            color: #343A40;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+        .greeting-card h3 { font-size: 1.8em; margin: 0 0 5px 0; font-weight: 700; color: #343A40; }
+        .greeting-card p { font-size: 0.9em; opacity: 0.8; }
+        .greeting-card .highlight-stat { color: #6C63FF; font-weight: 700; }
+
+        /* Table Styling */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; }
+        th { background-color: #F8F8FC; color: #495057; padding: 12px 15px; text-align: left; font-weight: 600; border-bottom: 2px solid #EAEAEA; }
+        td { padding: 10px 15px; border-bottom: 1px solid #F0F0F0; }
+
+        /* Status Indicators */
+        .status-paid { color: white; background-color: #64C783; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 0.85em; }
+        .status-unpaid { color: white; background-color: #FF6666; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 0.85em; }
+        .proof-link { color: #6C63FF; text-decoration: none; font-weight: 500; }
+        
+        /* Select/Dropdown Styling */
+        select { padding: 8px; border-radius: 4px; border: 1px solid #CED4DA; margin-right: 10px; }
+        .select-group { display: flex; align-items: center; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+<div class="main-wrapper">
+
+    <div class="top-nav">
+        <h2 style="margin: 0; border-bottom: none; color: #6C63FF;">Payment Tracker</h2>
+        <div class="nav-actions">
+            <a href="{{ url_for('upload') }}"><button class="btn-main">แจ้งชำระเงิน</button></a>
+            {% if user.role == 'admin' %}
+                <a href="{{ url_for('admin_dashboard') }}"><button class="btn-main">⚙️ Admin Control</button></a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}"><button class="btn-logout">Logout</button></a>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        
+        <div>
+            {% set paid_count = payments | selectattr('paid', 'equalto', true) | list | length %}
+            {% set total_count = payments | length %}
+            
+            <div class="greeting-card">
+                <h3>Welcome back, {{ user.name }} 👋</h3>
+                <p>รหัสนักศึกษา: {{ user.studentId }}</p>
+                <p style="margin-top: 15px;">สถานะรวม: **จ่ายแล้ว <span class="highlight-stat">{{ paid_count }}</span> คน** / ค้างชำระ <span class="highlight-stat">{{ total_count - paid_count }}</span> คน</p>
+            </div>
+
+            <div class="widget-card">
+                <div class="widget-header">สถานะการจ่ายเงิน (เดือน {{ current_month_name }})</div>
+                
+                <div class="select-group">
+                    <form method="GET" action="{{ url_for('home') }}">
+                        <select id="month-select" name="month_id" onchange="this.form.submit()">
+                            {% for m in available_months %}
+                                <option value="{{ m.id }}" {% if m.id == current_month_id %}selected{% endif %}>
+                                    {{ m.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>รหัสนักศึกษา</th>
+                            <th>ชื่อเพื่อน</th>
+                            <th>สถานะ</th>
+                            <th>สลิป</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in payments %}
+                        <tr>
+                            <td>{{ payment.studentId }}</td>
+                            <td>{{ payment.name }}</td>
+                            <td>
+                                <span class="{{ 'status-paid' if payment.paid else 'status-unpaid' }}">
+                                    {{ 'จ่ายแล้ว' if payment.paid else 'ยังไม่จ่าย' }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if payment.slipUrl %}
+                                    <a href="{{ payment.slipUrl }}" target="_blank" class="proof-link">View Proof</a>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="right-column-widgets">
+            
+            <div class="widget-card">
+                <div class="widget-header" style="color: #6C63FF;">Your Payment Status</div>
+                {% set user_unpaid_months = payments | selectattr('studentId', 'equalto', user.studentId) | selectattr('paid', 'equalto', false) | list %}
+                {% if user_unpaid_months | length > 0 %}
+                    <p style="color: #DC3545; font-weight: 600;">⚠️ You have {{ user_unpaid_months | length }} unpaid month(s).</p>
+                    <p style="font-size: 0.9em; margin-top: 10px;">Months Due: 
+                        {% for month in user_unpaid_months %}
+                            <span style="background-color: #FFEBEE; color: #DC3545; padding: 3px 6px; border-radius: 4px; margin-right: 5px;">{{ month.paymentMonth }}</span>
+                        {% endfor %}
+                    </p>
+                    <a href="{{ url_for('upload') }}"><button class="btn-main" style="width: 100%; margin-top: 15px;">Pay Now</button></a>
+                {% else %}
+                    <p style="color: #64C783; font-weight: 600;">✅ All clear! You are up to date.</p>
+                {% endif %}
+            </div>
+
+            <div class="widget-card">
+                <div class="widget-header">Recent Activity</div>
+                <p style="font-size: 0.9em; color: #6C757D;">No new activity yet.</p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
