@@ -202,6 +202,30 @@
                 font-size: 2.2em;
             }
         }
+
+        /* Responsive Adjustments (ที่ถูกปรับปรุง) */
+        @media (max-width: 768px) {
+            .login-wrapper {
+                flex-direction: column; /* เปลี่ยนเป็นเรียงซ้อน (Stack) */
+                margin: 20px;
+            }
+            .left-panel {
+                padding: 30px;
+                border-radius: 15px 15px 0 0;
+            }
+            .right-panel {
+                padding: 30px;
+            }
+            .left-panel .logo-img {
+                top: 15px;
+                left: 15px;
+                width: 35px;
+                height: 35px;
+            }
+            .left-panel h1 {
+                font-size: 2.2em;
+            }
+        }
     </style>
 </head>
 <body>
