@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>แผงควบคุมผู้ดูแล</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #F8F8FC; 
+            color: #343A40; 
+        }
+        .container { 
+            background-color: #FFFFFF; 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05); 
+            max-width: 1300px; 
+            margin: 40px auto; 
+        }
+        h2 { 
+            color: #6C63FF; /* ม่วง */
+            border-bottom: 1px solid #E9ECEF; 
+            padding-bottom: 10px; 
+            margin-bottom: 25px; 
+            font-weight: 600; 
+        }
+        h3 { margin-top: 30px; color: #6C63FF; font-weight: 500; border-bottom: 1px solid #E9ECEF; padding-bottom: 8px; }
+        
+        /* Action Buttons */
+        .admin-actions { display: flex; gap: 10px; margin-bottom: 30px; }
+        .admin-actions button { padding: 10px 15px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+        .btn-return { background-color: #A29BFE; color: white; } /* ม่วงอ่อน */
+        .btn-delete-session { background-color: #DC3545; color: white; } /* แดง */
+
+        /* Month Management Card */
+        .month-management { border: 1px solid #E9ECEF; padding: 20px; border-radius: 8px; margin-bottom: 40px; background-color: #FBFBFB; }
+        .month-management input[type="text"] { border-radius: 4px; border: 1px solid #CED4DA; padding: 10px; width: 180px; margin-right: 10px; display: inline-block; }
+        .btn-add { background-color: #64C783; color: white; border: none; } /* เขียว */
+        .btn-delete { background-color: #FFEBEE; color: #DC3545; border: 1px solid #FF6666; font-weight: 500; } /* ลบเดือน */
+        
+        /* Table Styling */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9em; border-radius: 8px; overflow: hidden; box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); }
+        th { background-color: #F0F0F0; color: #495057; padding: 12px 15px; font-weight: 600; text-align: left; border: none; } /* แก้ไขสีหัวตาราง */
+        td { padding: 12px 15px; border-bottom: 1px solid #E9ECEF; text-align: left; }
+        
+        /* FIX: กำหนด Class สำหรับแถบสลับสี */
+        .row-odd { background-color: #FFFFFF; } 
+        .row-even { background-color: #F9F9F9; } 
+
+        /* Status & Action Buttons */
+        .status-paid { color: #64C783; font-weight: 600; } 
+        .status-unpaid { color: #EF476F; font-weight: 600; } 
+        .btn-action-delete { background-color: #FFEBEE; color: #DC3545; padding: 6px 10px; border: 1px solid #FF6666; font-weight: 500; border-radius: 4px; }
+        .btn-action-set { background-color: #D4EDDA; color: #155724; padding: 6px 10px; border: 1px solid #64C783; font-weight: 500; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>⚙️ แผงควบคุมผู้ดูแล (Admin Dashboard)</h2>
+    <p style="font-size: 0.9em;">ยินดีต้อนรับ Admin: <strong>{{ user.name }} ({{ user.studentId }})</strong></p>
+    
+    <div class="admin-actions">
+        <a href="{{ url_for('home') }}"><button class="btn-return">◀ กลับหน้าหลักผู้ใช้</button></a>
+        <a href="{{ url_for('logout') }}"><button class="btn-delete-session">ออกจากระบบ</button></a>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #E9ECEF; margin-bottom: 25px;">
+
+    <h3 style="color: #6C63FF;">1. จัดการตารางเดือน</h3>
+
+    <div class="month-management">
+        <h4>+ เพิ่มรายการเดือนใหม่ (สำหรับสมาชิกทุกคน)</h4>
+        <form method="POST" action="{{ url_for('admin_add_month') }}" style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+            <input type="text" name="new_month_id" placeholder="รหัสเดือน (เช่น 2025-12)" required>
+            <input type="text" name="new_month_name" placeholder="ชื่อเดือน (เช่น ธันวาคม 2568)" required>
+            <button type="submit" class="btn-add" style="flex-grow: 0;">เพิ่มเดือน</button>
+        </form>
+        
+        <h4 style="margin-top: 25px;">🗑️ ลบเดือนที่มีอยู่ (🚨 ลบข้อมูลถาวร)</h4>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+            {% if unique_months %}
+                {% for month in unique_months %}
+                <form method="POST" action="{{ url_for('admin_delete_month') }}" 
+                      onsubmit="return confirm('คุณแน่ใจหรือไม่ที่จะลบเดือน {{ month }}? ข้อมูลการจ่ายเงินทั้งหมดจะหายไปอย่างถาวร');"
+                      style="display: inline-block;">
+                    <input type="hidden" name="month_id" value="{{ month }}">
+                    <button type="submit" class="btn-delete">ลบเดือน: {{ month }}</button>
+                </form>
+                {% endfor %}
+            {% else %}
+                <p style="color: #6C757D; font-size: 0.9em;">ยังไม่มีรายการเดือนให้ลบ</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #E9ECEF; margin-bottom: 25px;">
+
+    <h3 style="color: #6C63FF;">2. แก้ไขสถานะการจ่ายเงิน (ทุกเดือน ทุกคน)</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>รหัสจ่ายเงิน (ID)</th>
+                <th>รหัสนักศึกษา</th>
+                <th>ชื่อ</th>
+                <th>เดือน</th>
+                <th>สถานะปัจจุบัน</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in all_payments %}
+            <tr class="{% if loop.index is odd %}row-odd{% else %}row-even{% endif %}">
+                <td>{{ payment._id }}</td>
+                <td>{{ payment.studentId }}</td>
+                <td>{{ payment.name }}</td>
+                <td>{{ payment.paymentMonth }}</td>
+                <td>
+                    <span class="{{ 'status-paid' if payment.paid else 'status-unpaid' }}">
+                        {{ 'จ่ายแล้ว' if payment.paid else 'ยังไม่จ่าย' }}
+                    </span>
+                </td>
+                <td>
+                    <form method="POST" action="{{ url_for('admin_edit_payment') }}" style="display: inline-block;">
+                        <input type="hidden" name="payment_id" value="{{ payment._id }}">
+                        
+                        {% if payment.paid %}
+                            <input type="hidden" name="new_status" value="unpaid">
+                            <button type="submit" class="btn-action-delete">ยกเลิกการจ่าย</button>
+                        {% else %}
+                            <input type="hidden" name="new_status" value="paid">
+                            <button type="submit" class="btn-action-set">ตั้งเป็น 'จ่ายแล้ว'</button>
+                        {% endif %}
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
