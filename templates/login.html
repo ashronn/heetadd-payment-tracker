@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>ล็อกอิน / สมัครสมาชิก</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #F0F2F5; /* พื้นหลังโดยรวมที่นุ่มนวล */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* ทำให้เต็มหน้าจอ */
+            color: #343A40;
+        }
+
+        .login-wrapper {
+            display: flex;
+            background-color: #FFFFFF;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1); /* เงาที่ดูละมุนขึ้น */
+            overflow: hidden; /* ซ่อนส่วนเกินของ border-radius */
+            max-width: 900px; /* เพิ่มขนาดตาม Mockup */
+            width: 90%; /* ทำให้ Responsive */
+        }
+
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, #FFB74D 0%, #4DD0E1 100%); /* ส้ม -> ฟ้าเทอร์คอยซ์ */
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+
+        .left-panel .logo-img { /* เปลี่ยนจาก .logo เป็น .logo-img */
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 45px; /* ขนาดโลโก้ */
+            height: 45px;
+            border-radius: 50%; /* ทำให้เป็นวงกลม */
+            object-fit: cover; /* ทำให้รูปภาพพอดี */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2); /* เพิ่มเงาเล็กน้อยให้โลโก้ */
+            background-color: white; /* พื้นหลังสีขาวเผื่อรูปภาพมีส่วนโปร่งใส */
+            padding: 2px; /* ขอบขาวรอบโลโก้ */
+        }
+
+        .left-panel h1 {
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .left-panel p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .right-panel {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: #FFFFFF;
+        }
+
+        .right-panel h2 {
+            font-size: 2.2em;
+            color: #343A40;
+            margin-bottom: 10px;
+            font-weight: 600;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .right-panel p.sub-heading {
+            color: #6C757D;
+            font-size: 0.95em;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1em;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #4DD0E1;
+            box-shadow: 0 0 0 3px rgba(77, 208, 225, 0.2);
+        }
+
+        .options-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 0.9em;
+        }
+        .options-row .checkbox-group {
+            display: flex;
+            align-items: center;
+            color: #6C757D;
+        }
+        .options-row .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+            width: auto;
+        }
+        .options-row a {
+            color: #4DD0E1;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .options-row a:hover {
+            text-decoration: underline;
+        }
+
+        button.btn-login {
+            width: 100%;
+            padding: 13px 20px;
+            background-color: #4DD0E1; /* ฟ้าเทอร์คอยซ์ */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 10px rgba(77, 208, 225, 0.3);
+        }
+        button.btn-login:hover {
+            background-color: #39C0D3;
+            box-shadow: 0 6px 15px rgba(77, 208, 225, 0.4);
+        }
+
+        .signup-section {
+            margin-top: 35px;
+            text-align: center;
+            font-size: 0.95em;
+            color: #6C757D;
+        }
+        .signup-section a {
+            color: #FFB74D; /* ส้มสำหรับสมัครสมาชิก */
+            text-decoration: none;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        .signup-section a:hover {
+            text-decoration: underline;
+        }
+
+        .alert-message {
+            background-color: #FFEBEE;
+            color: #DC3545;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border: 1px solid #FF6666;
+            font-size: 0.9em;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .login-wrapper {
+                flex-direction: column;
+                margin: 20px;
+            }
+            .left-panel {
+                padding: 30px;
+                border-radius: 15px 15px 0 0;
+            }
+            .right-panel {
+                padding: 30px;
+            }
+            .left-panel .logo-img { /* เปลี่ยนจาก .logo เป็น .logo-img */
+                top: 15px;
+                left: 15px;
+                width: 35px;
+                height: 35px;
+            }
+            .left-panel h1 {
+                font-size: 2.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-wrapper">
+        <div class="left-panel">
+            <img src="https://scontent.fbkk4-4.fna.fbcdn.net/v/t39.30808-1/409824020_850707180398070_1641205452773558796_n.jpg?stp=c191.115.558.558a_dst-jpg_s200x200_tt6&_nc_cat=101&ccb=1-7&_nc_sid=2d3e12&_nc_eui2=AeGoxCVpZMpRv7K-eLWPQkVNRf9A5_mxTaFF_0Dn-bFNoQd2ViGjB1D4vvwZKpN0pghQVwIDEK7ZIvZhAkyWJOMq&_nc_ohc=7cNBGMe11usQ7kNvwHkW59E&_nc_oc=AdkTi6CKkSnC-AAd9AMXQO0XbpXcjGxrUgpOej_7K1VS04PWCShE4ED6ap51dQLwzTw&_nc_zt=24&_nc_ht=scontent.fbkk4-4.fna&_nc_gid=MLDbA2SsltR8aziM-SNObA&oh=00_AffJAG8IpkDtchpmEtS_2Jfwla15ck93qCpjS4SO1J8Thg&oe=68F6F0BB" alt="Logo" class="logo-img">
+            <h1>Welcome Back!</h1>
+            <p>กรุณาเข้าสู่ระบบเพื่อดำเนินการต่อ</p>
+        </div>
+        <div class="right-panel">
+            <h2>เข้าสู่ระบบ</h2>
+            <p class="sub-heading">กรุณากรอกรหัสนักศึกษาของท่าน</p>
+
+            {% if error %}
+                <div class="alert-message">{{ error }}</div>
+            {% endif %}
+            
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="form-group">
+                    <label for="student-id-input">รหัสนักศึกษา:</label>
+                    <input type="text" id="student-id-input" name="student_id" placeholder="กรอกรหัสนักศึกษา" required>
+                </div>
+                
+                <div class="options-row">
+                    <div class="checkbox-group">
+                        </div>
+                </div>
+
+                <button type="submit" class="btn-login">เข้าสู่ระบบ</button>
+            </form>
+
+            <div class="signup-section">
+                ยังไม่มีบัญชีใช่ไหม? <a href="#" id="show-register-form">สมัครสมาชิก</a>
+            </div>
+
+            <form method="POST" action="{{ url_for('register') }}" id="register-form" style="display: none; margin-top: 30px; border-top: 1px dashed #EEE; padding-top: 20px;">
+                <h3 style="margin-top: 0; color: #343A40; font-size: 1.5em; font-weight: 600;">สมัครสมาชิกใหม่</h3>
+                <div class="form-group">
+                    <label for="new-student-id">รหัสนักศึกษาใหม่:</label>
+                    <input type="text" id="new-student-id" name="new_student_id" placeholder="รหัสนักศึกษาใหม่" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-name">ชื่อ-นามสกุล:</label>
+                    <input type="text" id="new-name" name="new_name" placeholder="ชื่อ-นามสกุล" required>
+                </div>
+                <button type="submit" class="btn-login" style="background-color: #FFB74D; box-shadow: 0 4px 10px rgba(255, 183, 77, 0.3);">ลงทะเบียน</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('show-register-form').addEventListener('click', function(e) {
+            e.preventDefault();
+            const registerForm = document.getElementById('register-form');
+            if (registerForm.style.display === 'none' || registerForm.style.display === '') {
+                registerForm.style.display = 'block';
+                this.textContent = 'ซ่อนฟอร์มสมัครสมาชิก';
+            } else {
+                registerForm.style.display = 'none';
+                this.textContent = 'สมัครสมาชิก';
+            }
+        });
+    </script>
+</body>
+</html>
