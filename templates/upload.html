@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>แจ้งชำระเงิน</title>
+    <style> 
+        /* BASE & LAYOUT: ใช้ร่วมกับ Home Dashboard */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #F8F8FC; 
+            color: #343A40; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container { 
+            background-color: #fff; 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); 
+            max-width: 550px; 
+            width: 90%;
+        }
+        h2 { color: #3A86FF; border-bottom: 1px solid #E9ECEF; padding-bottom: 10px; margin-bottom: 25px; font-weight: 600; }
+        
+        /* Input/Select/Button Styling */
+        input[type="number"], input[type="file"], select { width: 100%; padding: 12px 15px; margin-bottom: 15px; border-radius: 6px; border: 1px solid #CED4DA; box-sizing: border-box; font-size: 1em; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background-color 0.2s; }
+        
+        /* Color Palettes */
+        .btn-success { background-color: #64C783; color: white; } /* เขียว */
+        .btn-secondary { background-color: #A29BFE; color: white; } /* ม่วงอ่อน */
+        .btn-success:hover { background-color: #55B573; }
+        
+        /* Debt Alert Styling */
+        .debt-alert-danger { background-color: #FFEBEE; border: 1px solid #FF6666; color: #DC3545; padding: 15px; border-radius: 6px; margin-bottom: 25px; font-weight: 600; }
+        .debt-alert-success { background-color: #D4EDDA; border: 1px solid #64C783; color: #155724; padding: 15px; border-radius: 6px; margin-bottom: 25px; font-weight: 600; }
+        .input-highlight { background-color: #FFFDE7; border-color: #FFC107; } /* เน้นช่องใส่เงิน */
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>💵 แจ้งชำระเงินค่าห้อง</h2>
+    <p style="font-size: 0.9em; color: #6C757D;">สวัสดี คุณ <strong>{{ user.name }}</strong></p>
+
+    {% if total_due > 0 %}
+        <div class="debt-alert-danger">
+            <strong>🚨 ยอดค้างชำระรวม: {{ total_due }} บาท</strong> 
+            (เพื่อเคลียร์ทั้งหมด ท่านต้องจ่าย {{ total_due }} บาท)
+        </div>
+    {% else %}
+        <div class="debt-alert-success">
+            ✅ **ท่านไม่มีค่าใช้จ่ายค้างชำระ** (ชำระ 50 บาท เพื่อจ่ายของเดือนปัจจุบัน)
+        </div>
+    {% endif %}
+
+
+    {% if error %}
+        <p style="color: red; padding: 10px; border: 1px solid red; border-radius: 4px; margin-bottom: 15px;">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('upload') }}" enctype="multipart/form-data">
+        
+        <label for="amount-paid-input" style="font-weight: bold;">1. ยอดเงินที่จ่าย (บาท):</label>
+        <input type="number" id="amount-paid-input" name="amount_paid" 
+               placeholder="ขั้นต่ำ 50 หรือยอดรวม {{ total_due }}" 
+               required min="50" class="input-highlight">
+        <p style="font-size: 0.85em; color: #6C757D; margin-top: -10px;">* หากจ่ายมากกว่า 50 บาท ระบบจะเคลียร์ยอดค้างเดือนเก่าสุดก่อน</p>
+
+
+        <label for="pay-month-select" style="font-weight: bold;">2. ระบุเดือนที่จ่าย:</label>
+        <select id="pay-month-select" name="payment_month_id" required>
+            {% for m in available_months %}
+                <option value="{{ m.id }}">
+                    {{ m.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label for="slip-file" style="font-weight: bold;">3. แนบหลักฐานสลิป (รูปภาพ/PDF):</label>
+        <input type="file" id="slip-file" name="slip_file" accept="image/*, application/pdf" required>
+        
+        <button type="submit" class="btn-success" style="margin-top: 20px;">ยืนยันการชำระ</button>
+    </form>
+    
+    <a href="{{ url_for('home') }}"><button class="btn-secondary" style="margin-top: 10px;">กลับสู่หน้าหลัก</button></a>
+</div>
+</body>
+</html>
