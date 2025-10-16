@@ -54,6 +54,32 @@
         .status-unpaid { color: #EF476F; font-weight: 600; } 
         .btn-action-delete { background-color: #FFEBEE; color: #DC3545; padding: 6px 10px; border: 1px solid #FF6666; font-weight: 500; border-radius: 4px; }
         .btn-action-set { background-color: #D4EDDA; color: #155724; padding: 6px 10px; border: 1px solid #64C783; font-weight: 500; border-radius: 4px; }
+
+        /* 💥 NEW FIX: Media Query สำหรับมือถือและแท็บเล็ต */
+    @media (max-width: 1000px) {
+        .container {
+            padding: 15px;
+            margin: 20px auto;
+        }
+        .admin-actions {
+            flex-wrap: wrap;
+        }
+        .month-management input[type="text"] {
+            width: 100%; /* ทำให้ช่องกรอกเดือนเต็มความกว้าง */
+            margin-bottom: 10px;
+        }
+        
+        /* จัดการตารางที่มีข้อมูลมากที่สุด */
+        table {
+            display: block;
+            overflow-x: auto; /* ทำให้สามารถเลื่อนตารางแนวนอนได้ */
+            white-space: nowrap; /* ป้องกันข้อมูลในตารางแตกบรรทัด */
+            -webkit-overflow-scrolling: touch; /* ปรับปรุงการเลื่อนบน iOS */
+        }
+        th, td {
+            min-width: 120px; /* กำหนดความกว้างขั้นต่ำของแต่ละคอลัมน์ */
+        }
+    }
     </style>
 </head>
 <body>
