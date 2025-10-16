@@ -89,6 +89,48 @@
         /* Select/Dropdown Styling */
         select { padding: 8px; border-radius: 4px; border: 1px solid #CED4DA; margin-right: 10px; }
         .select-group { display: flex; align-items: center; margin-bottom: 15px; }
+
+        @media (max-width: 950px) {
+        .main-wrapper {
+            padding: 10px; /* ลด padding ขอบหน้าจอ */
+        }
+        .dashboard-grid {
+            grid-template-columns: 1fr; /* เปลี่ยนเป็น 1 คอลัมน์สำหรับมือถือ */
+        }
+        .top-nav {
+            flex-direction: column; /* จัด Navbar ให้เรียงลงมา */
+            align-items: flex-start;
+        }
+        .nav-actions {
+            margin-top: 10px;
+            width: 100%;
+            justify-content: space-between;
+        }
+        .greeting-card h3 {
+            font-size: 1.5em;
+        }
+        .widget-card {
+            margin-bottom: 20px;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .nav-actions {
+            flex-wrap: wrap; /* ปุ่มแตกแถวถ้ายาวเกินไป */
+        }
+        .nav-actions a, .action-buttons a {
+            flex-grow: 1; /* ทำให้ปุ่มเต็มความกว้าง */
+            min-width: 120px;
+        }
+        .greeting-card {
+            padding: 20px;
+        }
+        table {
+            display: block; /* ทำให้ตารางสามารถเลื่อนแนวนอนได้ */
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+    }
     </style>
 </head>
 <body>
